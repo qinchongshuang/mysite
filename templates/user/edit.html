@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% block title %}用户信息{% endblock title %}
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-12 mt-4 mb-4">
+            <form class="col-4" method="post" action="{% url 'user:edit' user_id=user.id %}" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="form-group">
+                    用户名：{{ user.username }}
+                </div>
+                <div class="form-group">
+                    头像:
+                    {% if userpro.avatar %}
+{#                      <div class="col-md-4">头像</div>#}
+                        <img src="{{ userpro.avatar.url }}" style="width: 20%" class="img-thumbnail">
+                    {% else %}
+                        <h7 class="col-md-4">暂无头像</h7>
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    <label for="avatar">更换头像:</label>
+                    <input type="file" class="form-control-file" name="avatar" id="avatar">
+                </div>
+                <div class="form-inline">
+                    <label for="phone">电话：</label>
+                    <input type="text" class="form-control" id="phone" name="phone" required value={{ userpro.phone }}>
+                </div>
+                <div class="form-group">
+                    <label for="bio">简介</label>
+                    <textarea type="text" class="form-control" id="bio" name="bio" rows="12">{{ userpro.bio }}</textarea>
+                </div>
+                <p><font size="1" color="red">
+                    {% if errmsg %}
+                        {{ errmsg }}<br>
+                    {% endif %}
+                </font></p>
+                <button type="submit" class="btn btn-primary">提交</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock content %}

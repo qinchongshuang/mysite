@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% block  title %}博客主页{% endblock title %}
+
+{% block content %}
+    <div class="container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="{% url 'blog:blog_list' %}?search={{ search }}">
+                        最新
+                    </a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a href="{% url 'blog:blog_list' %}?order=view_nums&search={{ search }}">
+                        最热
+                    </a>
+                </li>
+                <li class="breadcrumb-item">
+                一共有{{ blog_count }}篇博文
+                </li>
+            </ol>
+        </nav>
+
+        {% if search %}
+            {% if posts %}
+                <h7><span style="color: red">"{{ search }}"</span>的搜索结果有如下<span style="color: red">{{ blog_search_count }}</span>条：</h7>
+                <hr>
+            {% else %}
+                <h7>暂无<span style="color: red">"{{ search }}"</span>有关的文章</h7>
+                <hr>
+            {% endif %}
+        {% endif %}
+
+        <div class="row mt-2">
+            {% for post in posts %}
+                <div class="col-12 mb-4">
+                    <div class="card h-100">
+                        <h4 class="card-header">{{ post.title }}</h4>
+                        <div class="card-body">
+                            <p class="card-text">{{ post.body }} </p>
+                            <p>
+                            <font size="1" color="gray">
+                                创建时间：{{ post.create_timestamp|date:'Y-m-d H:i:s' }}<br>
+                                最后编辑时间：{{ post.last_edit_timestamp|date:'Y-m-d H:i:s' }}
+                            </font>
+                            </p>
+                        </div>
+                        <div class="card-footer">
+                            <a href="{% url 'blog:blog_detail' post_id=post.id %}" class="btn btn-primary">阅读本文</a>
+                            <a href="{% url 'blog:blog_update' post_id=post.id %}" class="btn btn-primary">编辑</a>
+                            <a href="javascript:if(confirm('确认删除这篇文章吗?'))location='{% url 'blog:blog_delete' post_id=post.id %}'" class="btn btn-primary">删除</a>
+                            <span>
+                                <small class="col align-self-end" style="color: gray;">
+                                    浏览量:{{ post.view_nums }}
+                                </small>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+
+            <div class="row mt-2">
+                <div class="col-12 mb-4">
+                    <span class="step-links">
+                        {% if posts.has_previous %}
+                            <a href="?page={{ posts.previous_page_number }}&order={{ order }}&search={{ search }}" class="btn btn-secondary">上一页 &laquo;</a>
+                        {% endif %}
+                        <span class="current">
+                            {% for page in posts.paginator.page_range %}
+                                {% if page == posts.number %}
+                                    <span class="current btn">{{ page }}</span>
+                                {% else %}
+                                    <a href="?page={{ page }}&order={{ order }}&search={{ search }}" class="current btn btn-info">{{ page }}</a>
+                                {% endif %}
+                            {% endfor %}
+                        </span>
+                        {% if posts.has_next %}
+                            <a href="?page={{ posts.next_page_number }}&order={{ order }}&search={{ search }}" class="btn btn-secondary">&raquo;下一页</a>
+                        {% endif %}
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content%}

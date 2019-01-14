@@ -1,0 +1,53 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+        <a class="navbar-brand" href="{% url 'blog:blog_list' %}">我的博客</a>
+        <div>
+            <ul class="navbar-nav">
+                <div class="nav-item">
+                    <form class="form-inline">
+                        <label class="sr-only">content</label>
+                        <input type="text"
+                        class="form-control mb-2 mr-sm-2"
+                        name="search"
+                        placeholder="搜索文章"
+                        required>
+                    </form>
+                </div>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'blog:blog_create' %}">写博客</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'blog:blog_list' %}">文章</a>
+                </li>
+
+                <div class="nav-item">
+                {% if user.is_authenticated %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{ user.username }}</a>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <a class="dropdown-item" href="{% url 'user:edit' user_id=user.id %}">用户中心</a>
+                            <a class="dropdown-item" href="{% url 'user:logout' %}">退出登录</a>
+                            <a class="dropdown-item" href="javascript:void(0)" onclick="user_delete()">注销账号</a>
+                        </div>
+                    </li>
+                    <script>
+                    function user_delete() {
+                        layer.open({
+                            title:'注销账号',
+                            content:'确认注销该帐号吗?',
+                            yes:function () {
+                                location.href='{% url 'user:delete' user_id=user.id %}'
+                            }
+                        })
+                    }
+                    </script>
+                {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'user:login' %}">登录</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</nav>

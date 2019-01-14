@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+{% block title %}文章详情{% endblock title %}
+
+{% block content %}
+<div class="container">
+<div class="row">
+    <h4 class="col-12 mt-4">{{ post.title }}</h4>
+    <div class="col-6">
+        <p><font size="1" color="gray">
+        创建时间：{{ post.create_timestamp|date:'Y-m-d H:i:s' }}<br>
+        最后编辑时间：{{ post.last_edit_timestamp|date:'Y-m-d H:i:s' }}
+        </font></p>
+    </div>
+    <div class="col-6">
+        <p style="text-align: right"><a href="{% url 'blog:blog_update' post_id=post.id %}" class="btn btn-primary" >编辑</a></p>
+    </div>
+    <div class="col-9">
+    <div class="alert alert-success" >
+        <span>作者:{{ post.author }}</span>
+         | <span>浏览量：{{ post.view_nums }}</span>
+    </div>
+    <p>{{ post.body|safe }}</p>
+    <hr>
+    <div>
+        {% if user.is_authenticated %}
+            <form action="{% url 'comment:blog_comment' post_id=post.id %}" method="post">
+            {% csrf_token %}
+                <div class="form-group">
+                    <label for="body"><strong>发表评论：</strong></label>
+                    <textarea type="text" class="form-control" id="body" name="body" rows="4" placeholder="请输入评论内容" required></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">提交</button>
+            </form>
+            <br>
+        {% else %}
+            <p style="text-align: center">请<a href="{% url 'user:login' %}">登录</a>后评论</p>
+        {% endif %}
+    </div>
+    <div>
+    <h5>共有{{ comments.count }}条评论</h5>
+        {% for comment in comments %}
+            <hr>
+            <div class="form-group">
+                <img src="{{ comment.user.userpro.avatar.url }}" class="img-thumbnail" style="max-width: 10%;border-radius: 25%;max-height: 10%">
+            </div>
+            <div class="form-group">
+                <span><strong style="color: gray">{{ comment.user }}：</strong></span>
+                <pre style="font-family: inherit;font-size: 1em;">{{ comment.body }}</pre>
+                <p style="text-align: right;">
+                <span style="color: gray;float: left">{{ comment.create_timestamp|date:"Y-m-d H:i:s" }}</span>
+                <span style="text-align: right"><a href="{% url 'comment:comment_update' comment_id=comment.id %}">编辑</a></span>
+                <span style="text-align: right"><a href="javascript:if(confirm('确认删除这个评论吗?'))location='{% url 'comment:comment_delete' comment_id=comment.id %}'">删除</a></span>
+                </p>
+            </div>
+        {% endfor %}
+    </div>
+    </div>
+    <div class="col-3 bg-light" style="color: gray">
+        <h7><strong>目录</strong></h7>
+        <hr>
+        <div>{{ toc | safe}}</div>
+    </div>
+</div>
+</div>
+{% endblock content %}
